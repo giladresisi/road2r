@@ -26,6 +26,9 @@ import { InputAreaComponent } from './common/input-area/input-area.component';
 import { DialogService } from './common/dialog';
 import { AdminGuard } from './users/roles';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RidesComponent } from './rides/rides.component';
+import { PatientsComponent } from './patients/patients.component';
+import { DriversComponent } from './drivers/drivers.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HomeComponent,
     YesNoQuestionComponent,
     SignInComponent,
-    InputAreaComponent
+    InputAreaComponent,
+    RidesComponent,
+    PatientsComponent,
+    DriversComponent
   ],
   imports: [
     BrowserModule,
