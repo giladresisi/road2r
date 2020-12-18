@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Context } from '@remult/core';
+import { Patients } from './patients';
 
 @Component({
   selector: 'app-patients',
@@ -7,9 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PatientsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private context:Context) { }
+  patients = this.context.for(Patients).gridSettings({allowCRUD:true});
 
   ngOnInit() {
+    
   }
-
 }

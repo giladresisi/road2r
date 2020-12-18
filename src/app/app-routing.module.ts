@@ -17,9 +17,9 @@ import { PatientsComponent } from './patients/patients.component';
 const routes: Routes = [
   { path: 'Home', component: HomeComponent },
   { path: 'Rides', component: RidesComponent },
-  { path: 'Drivers', component: DriversComponent, canActivate: [AdminGuard] },
-  { path: 'Patients', component: PatientsComponent, canActivate: [AdminGuard] },
-  { path: 'User Accounts', component: UsersComponent, canActivate: [AdminGuard] },
+  { path: 'Drivers', component: DriversComponent },
+  { path: 'Patients', component: PatientsComponent },
+  { path: 'User Accounts', component: UsersComponent },
 
   { path: 'Register', component: RegisterComponent, canActivate: [NotSignedInGuard] },
   { path: 'Account Info', component: UpdateInfoComponent, canActivate: [SignedInGuard] },

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Context } from '@remult/core';
+import { Drivers } from './drivers';
 
 @Component({
   selector: 'app-drivers',
@@ -7,9 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DriversComponent implements OnInit {
 
-  constructor() { }
+  constructor(private context:Context) { }
+  drivers = this.context.for(Drivers).gridSettings({allowCRUD:true});
 
   ngOnInit() {
+    
   }
-
 }

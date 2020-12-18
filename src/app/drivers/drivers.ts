@@ -1,4 +1,4 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, IdColumn } from '@remult/core';
 
 @EntityClass
 export class Drivers extends IdEntity {
@@ -11,4 +11,7 @@ export class Drivers extends IdEntity {
             allowApiRead:true
         });
     }
+}
+export class DriverColumn extends IdColumn{
+
 }
