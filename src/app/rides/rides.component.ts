@@ -16,7 +16,8 @@ export class RidesComponent implements OnInit {
       allowCRUD: true,
       columnSettings: r => [
         r.patient,
-        r.time
+        r.time,
+        r.driver
       ]
     });
   async ngOnInit() {
@@ -26,7 +27,7 @@ export class RidesComponent implements OnInit {
     let r = this.context.for(Rides).create();
     await this.context.openDialog(InputAreaComponent,x=>x.args={
       title:'הוספת נסיעה',
-      columnSettings:()=>[r.patient,r.time],
+      columnSettings:()=>[r.patient,r.time,r.driver],
       ok:()=>{}
     });
     

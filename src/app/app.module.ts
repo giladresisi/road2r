@@ -28,7 +28,6 @@ import { AdminGuard } from './users/roles';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RidesComponent } from './rides/rides.component';
 import { PatientsComponent } from './patients/patients.component';
-import { DriversComponent } from './drivers/drivers.component';
 
 @NgModule({
   declarations: [
@@ -41,8 +40,7 @@ import { DriversComponent } from './drivers/drivers.component';
     SignInComponent,
     InputAreaComponent,
     RidesComponent,
-    PatientsComponent,
-    DriversComponent
+    PatientsComponent
   ],
   imports: [
     BrowserModule,

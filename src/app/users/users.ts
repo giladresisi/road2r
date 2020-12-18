@@ -74,7 +74,6 @@ export interface PasswordHelper {
 
 
 export class UserId extends IdColumn {
-
     constructor(private context: Context, settingsOrCaption?: ColumnOptions<string>) {
         super({
             dataControlSettings: () => ({
@@ -84,11 +83,19 @@ export class UserId extends IdColumn {
             })
         }, settingsOrCaption);
     }
+
     get displayValue() {
         return this.context.for(Users).lookup(this).name.value;
     }
-
-
-
 }
 
+export class UserColumn extends IdColumn{
+    constructor(context:Context){
+        super({
+            caption:'נהג',
+            dataControlSettings:()=>({
+                valueList:()=>context.for(Users).getValueList()
+            })
+        })
+    }
+}

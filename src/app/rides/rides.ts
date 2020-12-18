@@ -1,10 +1,10 @@
-import { Context, DateColumn, EntityClass, IdColumn, IdEntity, NumberColumn } from '@remult/core';
-import { DriverColumn, Drivers } from '../drivers/drivers';
+import { Context, DateColumn, EntityClass, IdEntity, NumberColumn } from '@remult/core';
 import { PatientColumn, Patients } from '../patients/patients';
+import { UserColumn } from '../users/users';
 
 @EntityClass
 export class Rides extends IdEntity {
-    driver = new DriverColumn();
+    driver = new UserColumn(this.context);
     patient = new PatientColumn(this.context);
     req_seats = new NumberColumn();
     time = new DateColumn();
