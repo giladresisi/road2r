@@ -1,0 +1,6 @@
+<ul>
+    <li *ngFor="let p of patients">
+        {{h.DisplayName}} <button (click)="insert(p)" *ngIf="!existing.has(h.DisplayName)">Add to my list</button> 
+    </li>
+</ul>
+<!-- <button (click)="addAll()">Add all to Patients</button> -->

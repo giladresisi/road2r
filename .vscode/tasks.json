@@ -26,7 +26,6 @@
                 "$tsc"
             ]
         },
-     
         {
             "type": "npm",
             "script": "node-serve",
@@ -37,6 +36,16 @@
                 "group": "groupA"
             },
             "isBackground": true
+        },
+        {
+            "type": "npm",
+            "script": "server:build-watch",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "group": "build",
+            "label": "npm: server:build-watch",
+            "detail": "tsc -p tsconfig.server.json --watch"
         }
     ]
 }

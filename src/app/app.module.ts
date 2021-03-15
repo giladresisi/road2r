@@ -28,6 +28,9 @@ import { AdminGuard } from './users/roles';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RidesComponent } from './rides/rides.component';
 import { PatientsComponent } from './patients/patients.component';
+import { LocationsComponent } from './locations/locations.component';
+// import { StamComponent } from './stam/stam.component';
+import { GridDialogComponent } from './common/grid-dialog/grid-dialog.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +43,10 @@ import { PatientsComponent } from './patients/patients.component';
     SignInComponent,
     InputAreaComponent,
     RidesComponent,
-    PatientsComponent
+    PatientsComponent,
+    LocationsComponent,
+    // StamComponent,
+    GridDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -62,6 +68,7 @@ import { PatientsComponent } from './patients/patients.component';
   ],
   providers: [DialogService, AdminGuard],
   bootstrap: [AppComponent],
-  entryComponents: [YesNoQuestionComponent, SignInComponent, InputAreaComponent]
+  entryComponents: [YesNoQuestionComponent, SignInComponent, InputAreaComponent,
+  GridDialogComponent]
 })
 export class AppModule { }

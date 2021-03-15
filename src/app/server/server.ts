@@ -9,9 +9,15 @@ import '../app.module';
 
 import { ServerSignIn } from "../users/server-sign-in";
 import { JWTCookieAuthorizationHelper } from '@remult/server';
+import { getDataFromOldSite } from './get-data-from-old-site';
+import { ServerContext } from '@remult/core';
 
 serverInit().then(async (dataSource) => {
-
+    try{
+    await getDataFromOldSite(new ServerContext(dataSource));
+    }catch (err){
+        console.error(err);
+    }
     let app = express();
     let eb = initExpress(app, dataSource, process.env.DISABLE_HTTPS == "true");
     ServerSignIn.helper = new JWTCookieAuthorizationHelper(eb, process.env.TOKEN_SIGN_KEY);

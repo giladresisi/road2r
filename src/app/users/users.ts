@@ -1,9 +1,10 @@
 
-import { Entity, IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn, ColumnOptions } from "@remult/core";
+import { Entity, IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn, ColumnOptions, ServerFunction } from "@remult/core";
 import { changeDate } from '../shared/types';
 import { Context, EntityClass } from '@remult/core';
 import { Roles } from './roles';
-
+import { SelectValueDialogComponent } from '@remult/angular';
+import { Locations } from '../locations/locations';
 
 
 
@@ -42,11 +43,19 @@ export class Users extends IdEntity {
     }
     public static emptyPassword = 'password';
     name = new StringColumn({
-        caption: "name",
+        caption: "שם",
         validate: () => {
-
             if (!this.name.value || this.name.value.length < 2)
-                this.name.validationError = 'Name is too short';
+                this.name.validationError = 'שם קצר מדי';
+        }
+    });
+    cellPhone = new StringColumn({
+        caption: "נייד",
+        validate: () => {
+            return;
+            if (!this.cellPhone.value || this.cellPhone.value.length != 9 ||
+                !this.cellPhone.value.startsWith('05'))
+                this.cellPhone.validationError = 'מספר נייד לא חוקי';
         }
     });
 
@@ -73,29 +82,114 @@ export interface PasswordHelper {
 }
 
 
-export class UserId extends IdColumn {
-    constructor(private context: Context, settingsOrCaption?: ColumnOptions<string>) {
+// export class UserId extends IdColumn {
+//     constructor(private context: Context, settingsOrCaption?: ColumnOptions<string>) {
+//         super({
+//             dataControlSettings: () => ({
+//                 getValue: () => this.displayValue,
+//                 hideDataOnInput: true,
+//                 width: '200'
+//             })
+//         }, settingsOrCaption);
+//     }
+
+//     get displayValue() {
+//         return this.context.for(Users).lookup(this).name.value;
+//     }
+// }
+
+export class UserColumn extends IdColumn {
+    @ServerFunction({ allowed: true })
+    static async getDrivers(filter: filterDrivers, context?: Context) {
+        let relevantDriverIdsAreas: string[] = [];
+        let relevantDriverIdsTimes: string[] = [];
+        let relevantDriverIds: string[] = [];
+        let drivers: Users[] = [];
+        if (filter) {
+            let lFrom = await context.for(Locations).findId(filter.fromLocation);
+            let lto = await context.for(Locations).findId(filter.toLocation);
+            relevantDriverIdsAreas.push(...(await context.for(UserPreferredAreas).find({
+                where: up => up.fromArea.isEqualTo(lFrom.area.value).and(
+                    up.toArea.isEqualTo(lto.area.value) // should include those for which up.from/toArea = ''
+                )
+            })).map(x => x.userId.value));
+            relevantDriverIdsTimes.push(...(await context.for(UserPreferredTimes).find({
+                where: up => up.DayOfWeek.isEqualTo(filter.dayOfWeek)
+            })).map(x => x.userId.value));
+            for (const x of relevantDriverIdsAreas) {
+                if (relevantDriverIdsTimes.includes(x)) {
+                    relevantDriverIds.push(x);
+                }
+            }
+            if (relevantDriverIds.length > 0)
+                drivers = await context.for(Users).find({ where: u => u.id.isIn(relevantDriverIds) });
+        }
+        else
+            drivers = await context.for(Users).find();
+
+        return drivers.map(x => ({
+            caption: x.name.value,
+            id: x.id.value
+        }));
+    }
+    constructor(private context: Context, getFilterDrivers?: () => filterDrivers) {
         super({
+            caption: 'נהג',
             dataControlSettings: () => ({
                 getValue: () => this.displayValue,
                 hideDataOnInput: true,
-                width: '200'
-            })
-        }, settingsOrCaption);
-    }
-
-    get displayValue() {
-        return this.context.for(Users).lookup(this).name.value;
-    }
-}
-
-export class UserColumn extends IdColumn{
-    constructor(context:Context){
-        super({
-            caption:'נהג',
-            dataControlSettings:()=>({
-                valueList:()=>context.for(Users).getValueList()
+                click: async () => {
+                    if (!getFilterDrivers)
+                        getFilterDrivers = () => undefined;
+                    let valuesForSelection: any[] = [];
+                    valuesForSelection.push({ caption: '<הסר נהג נוכחי>', id: '' });
+                    valuesForSelection.push(...await UserColumn.getDrivers(getFilterDrivers()));
+                    context.openDialog(SelectValueDialogComponent, x => x.args({
+                            values: valuesForSelection,
+                            onSelect: selectedValue => {
+                                this.value = selectedValue.id
+                            }
+                        })
+                    )
+                },
             })
         })
+    }
+    get displayValue() {
+        let s = this.context.for(Users).lookup(this).name.value;
+        if (!s) {
+            return '<בחר נהג>';
+        }
+        return s;
+    }
+}
+export interface filterDrivers {
+    fromLocation: string,
+    toLocation: string,
+    dayOfWeek: string
+}
+
+@EntityClass
+export class UserPreferredTimes extends IdEntity {
+    userId = new UserColumn(this.context);
+    DayOfWeek = new StringColumn();
+    MorningOrAfterNoon = new StringColumn();
+    constructor(private context: Context) {
+        super({
+            name: 'UserPreferredTimes'
+        });
+    }
+}
+@EntityClass
+export class UserPreferredAreas extends IdEntity {
+    userId = new UserColumn(this.context);
+    fromArea = new StringColumn();
+    toArea = new StringColumn();
+    constructor(private context: Context) {
+        super({
+            name: 'UserPreferredAreas',
+            allowApiCRUD: true
+
+        });
     }
 }

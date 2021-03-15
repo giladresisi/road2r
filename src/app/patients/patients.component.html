@@ -1,1 +1,7 @@
-<data-grid [settings]="patients"></data-grid>
+<div class="full-page">
+    <div>
+        <data-control [column]="search" style="display:inline-block;"></data-control>
+        <button style="display:inline-block;" (click)="addPatient()">new patient</button>
+    </div>
+    <data-grid [settings]="patients" class="grow-item"></data-grid>
+</div>

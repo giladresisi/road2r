@@ -11,13 +11,16 @@ import { Roles, AdminGuard } from './users/roles';
 import { ShowDialogOnErrorErrorHandler } from './common/dialog';
 import { RidesComponent } from './rides/rides.component';
 import { PatientsComponent } from './patients/patients.component';
-
+import { LocationsComponent } from './locations/locations.component';
+// import { StamComponent } from './stam/stam.component';
 
 const routes: Routes = [
   { path: 'Home', component: HomeComponent },
   { path: 'Rides', component: RidesComponent },
   { path: 'Patients', component: PatientsComponent },
+  { path: 'Locations', component: LocationsComponent },
   { path: 'User Accounts', component: UsersComponent },
+  // { path: 'Stam', component: StamComponent },
 
   { path: 'Register', component: RegisterComponent, canActivate: [NotSignedInGuard] },
   { path: 'Account Info', component: UpdateInfoComponent, canActivate: [SignedInGuard] },

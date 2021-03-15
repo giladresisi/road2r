@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Users } from './users';
+import { UserPreferredAreas, Users } from './users';
 import { Context, ServerFunction } from '@remult/core';
 
 import { DialogService } from '../common/dialog';
 import { Roles } from './roles';
+import { InputAreaComponent } from '../common/input-area/input-area.component';
+import { GridDialogComponent } from '../common/grid-dialog/grid-dialog.component';
 
 
 @Component({
@@ -23,6 +25,26 @@ export class UsersComponent implements OnInit {
     allowInsert: true,
     allowUpdate: true,
     numOfColumnsInGrid: 2,
+    rowButtons: [{
+      textInMenu: 'אזורים מועדפים',
+      click: u => {
+        this.context.openDialog(GridDialogComponent,
+          x => x.args = {
+            title: 'אזורים מועדפים',
+            settings: this.context.for(UserPreferredAreas).gridSettings({
+              allowCRUD:true,
+              columnSettings:up=>[up.fromArea,up.toArea],
+              get: {
+                where: up => up.userId.isEqualTo(u.id),
+
+              }, newRow: up => up.userId.value = u.id.value
+            })
+
+          });
+        
+
+      }
+    }],
     get: {
       orderBy: h => [h.name],
       limit: 100
@@ -30,8 +52,6 @@ export class UsersComponent implements OnInit {
     columnSettings: users => [
       users.name,
       users.admin
-
-
     ],
     confirmDelete: async (h) => {
       return await this.dialog.confirmDelete(h.name.value)
@@ -51,7 +71,7 @@ export class UsersComponent implements OnInit {
   @ServerFunction({ allowed: c => c.isAllowed(Roles.admin) })
   static async resetPassword(userId: string, context?: Context) {
     let u = await context.for(Users).findId(userId);
-    if (u){
+    if (u) {
       u.realStoredPassword.value = '';
       await u.save();
     }
