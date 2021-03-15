@@ -14,7 +14,7 @@
     "ng:build": "ng build --prod",
     "server:build-watch": "tsc -p tsconfig.server.json --watch",
     "server:build": "tsc -p tsconfig.server.json",
-    "server:debug": "node --inspect --debug-brk dist-server/server/server.js"
+    "server:debug": "node  --inspect dist-server/server/server.js"
   },
   "private": true,
   "dependencies": {

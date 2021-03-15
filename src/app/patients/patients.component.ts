@@ -21,11 +21,7 @@ export class PatientsComponent implements OnInit {
   patients = this.context.for(Patients).gridSettings({
     //allowCRUD: true,
     columnSettings: p => [
-      p.name,
-      p.defaultPhone,
-      p.defaultBarrier,
-      p.defaultHospital,
-      p.defaultReqSeats
+      p.name
     ],
     get: {
       where: p => this.search.value? p.name.isContains(this.search):undefined

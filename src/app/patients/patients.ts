@@ -35,7 +35,7 @@ export class Patients extends IdEntity {
             });
     }
     name = new StringColumn();
-    defaultPhone = new StringColumn({ caption: 'טלפון' });
+    defaultPhone = new StringColumn();
     defaultBarrier = new LocationColumn(this.context, { caption: 'מחסום' });
     defaultHospital = new LocationColumn(this.context, { caption: 'בית חולים' });
     defaultReqSeats = new NumberColumn({ caption: 'מספר מושבים' });
