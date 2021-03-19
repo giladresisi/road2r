@@ -15,7 +15,7 @@ export class PatientsComponent implements OnInit {
   constructor(private context: Context,private busy:BusyService) { }
   search = new StringColumn('Search Patient Name', {
     valueChange: () => {
-      this.busy.donotWait(async ()=>await this.patients.getRecords());
+      this.busy.donotWait(async ()=>await this.patients.reloadData());
     }
   });
   patients = this.context.for(Patients).gridSettings({
@@ -23,9 +23,9 @@ export class PatientsComponent implements OnInit {
     columnSettings: p => [
       p.name
     ],
-    get: {
+    
       where: p => this.search.value? p.name.isContains(this.search):undefined
-    },
+    ,
     rowButtons: [{
       showInLine: true,
       icon: 'directions_car',
@@ -52,7 +52,7 @@ export class PatientsComponent implements OnInit {
       ],
       ok:async()=>{
         await p.save();
-        await this.patients.getRecords();
+        await this.patients.reloadData();
       }
     });
   }

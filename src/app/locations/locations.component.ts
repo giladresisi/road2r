@@ -11,7 +11,7 @@ import { Locations } from './locations';
 export class LocationsComponent implements OnInit {
   search = new StringColumn('Search Location Name', {
     valueChange: () => {
-      this.busy.donotWait(async ()=>await this.locations.getRecords());
+      this.busy.donotWait(async ()=>await this.locations.reloadData());
     }
   });
 

@@ -4,7 +4,6 @@ import { PatientColumn } from '../patients/patients';
 import { UserColumn } from '../users/users';
 
 class DateColumnExt extends DateColumn {
-  
     getDayStr() {
         switch (this.getDayOfWeek()) {
             case 0:
@@ -32,7 +31,8 @@ export class Rides extends IdEntity {
     driver = new UserColumn(this.context, () => ({
         fromLocation: this.from.value,
         toLocation: this.to.value,
-        dayOfWeek: this.theDate.getDayStr()
+        dayOfWeek: this.theDate.getDayStr(),
+        timeOfDay: this.timeOfDay.toStr(),
     }));
     patient = new PatientColumn(this.context);
     contactPhone = new StringColumn({ caption: "טלפון ליצירת קשר" });
@@ -72,5 +72,14 @@ export class timeOfDay {
 export class TimeOfDayColumn extends ValueListColumn<timeOfDay>{
     constructor(options?: ColumnOptions<timeOfDay>) {
         super(timeOfDay, options);
+    }
+    toStr() {
+        if (this == timeOfDay.evening) {
+            return "evening";
+        } else if (this == timeOfDay.morning) {
+            return "morning";
+        } else {
+            return "";
+        }
     }
 }

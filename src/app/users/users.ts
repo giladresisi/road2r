@@ -1,10 +1,11 @@
 
-import { Entity, IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn, ColumnOptions, ServerFunction } from "@remult/core";
+import { IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn, ColumnOptions, ServerFunction } from "@remult/core";
 import { changeDate } from '../shared/types';
 import { Context, EntityClass } from '@remult/core';
 import { Roles } from './roles';
 import { SelectValueDialogComponent } from '@remult/angular';
 import { Locations } from '../locations/locations';
+import { TimeOfDayColumn } from "../rides/rides";
 
 
 
@@ -17,8 +18,8 @@ export class Users extends IdEntity {
         super({
             name: "Users",
             allowApiRead: true,
-            allowApiDelete: context.isSignedIn(),
-            allowApiUpdate: context.isSignedIn(),
+            allowApiDelete: true,
+            allowApiUpdate: true,
             allowApiInsert: true,
             saving: async () => {
                 if (context.onServer) {
@@ -34,6 +35,7 @@ export class Users extends IdEntity {
                 }
             },
             apiDataFilter: () => {
+                return undefined;
                 if (!context.isSignedIn())
                     return this.id.isEqualTo("No User");
                 else if (!(context.isAllowed(Roles.admin)))
@@ -114,7 +116,9 @@ export class UserColumn extends IdColumn {
                 )
             })).map(x => x.userId.value));
             relevantDriverIdsTimes.push(...(await context.for(UserPreferredTimes).find({
-                where: up => up.DayOfWeek.isEqualTo(filter.dayOfWeek)
+                where: up => up.DayOfWeek.isEqualTo(filter.dayOfWeek).and(
+                    up.MorningOrAfterNoon.isEqualTo(filter.timeOfDay)
+                )
             })).map(x => x.userId.value));
             for (const x of relevantDriverIdsAreas) {
                 if (relevantDriverIdsTimes.includes(x)) {
@@ -122,7 +126,7 @@ export class UserColumn extends IdColumn {
                 }
             }
             if (relevantDriverIds.length > 0)
-                drivers = await context.for(Users).find({ where: u => u.id.isIn(relevantDriverIds) });
+                drivers = await context.for(Users).find({ where: u => u.id.isIn(...relevantDriverIds) });
         }
         else
             drivers = await context.for(Users).find();
@@ -155,6 +159,7 @@ export class UserColumn extends IdColumn {
             })
         })
     }
+    //@ts-ignore
     get displayValue() {
         let s = this.context.for(Users).lookup(this).name.value;
         if (!s) {
@@ -166,14 +171,15 @@ export class UserColumn extends IdColumn {
 export interface filterDrivers {
     fromLocation: string,
     toLocation: string,
-    dayOfWeek: string
+    dayOfWeek: string,
+    timeOfDay: string,
 }
 
 @EntityClass
 export class UserPreferredTimes extends IdEntity {
     userId = new UserColumn(this.context);
     DayOfWeek = new StringColumn();
-    MorningOrAfterNoon = new StringColumn();
+    MorningOrAfterNoon = new TimeOfDayColumn();
     constructor(private context: Context) {
         super({
             name: 'UserPreferredTimes'

@@ -39,7 +39,7 @@ export class UpdateInfoComponent implements OnInit {
 
 
   ngOnInit() {
-    this.helpers.getRecords().then(() => {
+    this.helpers.reloadData().then(() => {
       if (!this.helpers.currentRow.password.value)
         this.confirmPassword.value = '';
     });

@@ -42,6 +42,7 @@ export class Patients extends IdEntity {
     constructor(private context: Context) {
         super({
             name: "Patients",
+            defaultOrderBy:()=>this.name,
             allowApiCRUD: true,
             allowApiRead: true
         });

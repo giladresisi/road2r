@@ -13,9 +13,9 @@ import { getDataFromOldSite } from './get-data-from-old-site';
 import { ServerContext } from '@remult/core';
 
 serverInit().then(async (dataSource) => {
-    try{
-    await getDataFromOldSite(new ServerContext(dataSource));
-    }catch (err){
+    try {
+        await getDataFromOldSite(new ServerContext(dataSource));
+    } catch (err){
         console.error(err);
     }
     let app = express();

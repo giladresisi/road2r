@@ -2,10 +2,11 @@ import { Context } from '@remult/core';
 import * as fetch from 'node-fetch';
 import { LocationColumn, Locations } from '../locations/locations';
 import { Patients } from '../patients/patients';
+import { timeOfDay } from '../rides/rides';
 import { UserPreferredAreas, UserPreferredTimes, Users } from '../users/users';
 export async function getDataFromOldSite(context: Context) {
     // return;
-    await getPatients(context);
+    // await getPatients(context);
     return;
     await getVolunteers(context);
 }
@@ -32,7 +33,7 @@ async function getPatients(context:Context) {
         if (p.EnglishName = "Anonymous Tarkumiya Shiba") {
             continue;
         }
-        // console.log(p.EnglishName + " - " + ((i++) * 100 / patients.length).toFixed());
+        console.log(p.EnglishName + " - " + ((i++) * 100 / patients.length).toFixed());
         let shouldSave = false;
         let patient = await context.for(Patients).findFirst(x => x.name.isEqualTo(p.EnglishName));
         if (!patient) {
@@ -128,8 +129,29 @@ async function getVolunteers(context: Context) {
             for (const time of fullVolunteerInfo.PrefTime) {
                 let pt = context.for(UserPreferredTimes).create();
                 pt.userId.value = user.id.value;
-                pt.DayOfWeek.value = time[0];
-                pt.MorningOrAfterNoon.value = time[1];
+                switch (time[0]) {
+                    case "ראשון":
+                    case "שני":
+                    case "שלישי":
+                    case "רביעי":
+                    case "חמישי":
+                    case "שישי":
+                    case "שבת":
+                        pt.DayOfWeek.value = time[0];
+                        break;
+                    default:
+                        continue;
+                }
+                switch (time[1]) {
+                    case "בוקר":
+                        pt.MorningOrAfterNoon.value = timeOfDay.morning;
+                        break;
+                    case "אחהצ":
+                        pt.MorningOrAfterNoon.value = timeOfDay.evening;
+                        break;
+                    default:
+                        continue;
+                }
                 await pt.save();
             }
 

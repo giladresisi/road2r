@@ -17,6 +17,7 @@ export class RidesComponent implements OnInit {
       columnSettings: r => [
         r.patient,
         r.theDate,
+        r.timeOfDay,
         r.driver,
         r.from,
         r.to,
@@ -42,6 +43,7 @@ export class RidesComponent implements OnInit {
       columnSettings:()=>[
         r.patient,
         r.theDate,
+        r.timeOfDay,
         r.from,
         r.to,
         r.contactPhone,
@@ -49,7 +51,7 @@ export class RidesComponent implements OnInit {
       ],
       ok:async()=>{
         await r.save();
-        await this.rides.getRecords();
+        await this.rides.reloadData();
       }
     });
   }

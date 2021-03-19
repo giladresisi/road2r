@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserPreferredAreas, Users } from './users';
+import { UserPreferredAreas, UserPreferredTimes, Users } from './users';
 import { Context, ServerFunction } from '@remult/core';
 
 import { DialogService } from '../common/dialog';
@@ -36,13 +36,25 @@ export class UsersComponent implements OnInit {
               columnSettings:up=>[up.fromArea,up.toArea],
               get: {
                 where: up => up.userId.isEqualTo(u.id),
-
               }, newRow: up => up.userId.value = u.id.value
             })
-
           });
-        
-
+      }
+    },
+    {
+      textInMenu: 'זמנים מועדפים',
+      click: u => {
+        this.context.openDialog(GridDialogComponent,
+          x => x.args = {
+            title: 'זמנים מועדפים',
+            settings: this.context.for(UserPreferredTimes).gridSettings({
+              allowCRUD:true,
+              columnSettings:up=>[up.DayOfWeek,up.MorningOrAfterNoon],
+              get: {
+                where: up => up.userId.isEqualTo(u.id),
+              }, newRow: up => up.userId.value = u.id.value
+            })
+          });
       }
     }],
     get: {
@@ -56,8 +68,6 @@ export class UsersComponent implements OnInit {
     confirmDelete: async (h) => {
       return await this.dialog.confirmDelete(h.name.value)
     },
-
-
   });
 
 
