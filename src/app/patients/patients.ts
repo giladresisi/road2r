@@ -17,7 +17,6 @@ export class Patients extends IdEntity {
         newRide.theDate.value = new Date(d.getFullYear(), d.getMonth(), d.getDate());
         newRide.timeOfDay.value = timeOfDay.morning;
 
-
         await this.context.openDialog(InputAreaComponent,
             inputArea => inputArea.args = {
                 title: 'Add Ride',

@@ -19,15 +19,15 @@ export class PatientsComponent implements OnInit {
     }
   });
   patients = this.context.for(Patients).gridSettings({
-    //allowCRUD: true,
+    allowCRUD: true,
     columnSettings: p => [
       p.name
     ],
-    
       where: p => this.search.value? p.name.isContains(this.search):undefined
     ,
     rowButtons: [{
       showInLine: true,
+      textInMenu: 'נסיעה חדשה',
       icon: 'directions_car',
       click: async currentPatient => {
         await currentPatient.showNewRideDialog()

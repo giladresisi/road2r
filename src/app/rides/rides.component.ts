@@ -25,6 +25,8 @@ export class RidesComponent implements OnInit {
         r.reqSeats
       ],
       rowButtons: [{
+        showInLine: true,
+        icon: 'visibility',
         textInMenu: 'הצג את כל הנהגים',
         click: r => {
           r.toggleShowAll();

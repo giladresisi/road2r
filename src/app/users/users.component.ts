@@ -26,6 +26,8 @@ export class UsersComponent implements OnInit {
     allowUpdate: true,
     numOfColumnsInGrid: 2,
     rowButtons: [{
+      showInLine: true,
+      icon: 'map',
       textInMenu: 'אזורים מועדפים',
       click: u => {
         this.context.openDialog(GridDialogComponent,
@@ -42,6 +44,8 @@ export class UsersComponent implements OnInit {
       }
     },
     {
+      showInLine: true,
+      icon: 'access_time',
       textInMenu: 'זמנים מועדפים',
       click: u => {
         this.context.openDialog(GridDialogComponent,
