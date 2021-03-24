@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Context } from '@remult/core';
 import { InputAreaComponent } from '../common/input-area/input-area.component';
-import { Patients } from '../patients/patients';
 import { Rides } from './rides';
 
 @Component({
@@ -15,7 +14,7 @@ export class RidesComponent implements OnInit {
     {
       allowCRUD: true,
       columnSettings: r => [
-        r.patient,
+        { column: r.patient, readOnly: true },
         r.theDate,
         r.timeOfDay,
         r.driver,
@@ -34,15 +33,13 @@ export class RidesComponent implements OnInit {
       }],
     });
   async ngOnInit() {
-    for await (let r of this.context.for(Rides).iterate()) {
-      console.log("patient - " + r.patient.value);
-    }
+
   }
-  async addRide(){
+  async addRide() {
     let r = this.context.for(Rides).create();
-    await this.context.openDialog(InputAreaComponent,x=>x.args={
-      title:'הוספת נסיעה',
-      columnSettings:()=>[
+    await this.context.openDialog(InputAreaComponent, x => x.args = {
+      title: 'הוספת נסיעה',
+      columnSettings: () => [
         r.patient,
         r.theDate,
         r.timeOfDay,
@@ -51,7 +48,7 @@ export class RidesComponent implements OnInit {
         r.contactPhone,
         r.reqSeats
       ],
-      ok:async()=>{
+      ok: async () => {
         await r.save();
         await this.rides.reloadData();
       }

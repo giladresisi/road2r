@@ -1,11 +1,11 @@
 
-import { IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn, ColumnOptions, ServerFunction } from "@remult/core";
+import { IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn, ColumnOptions, ServerFunction, ValueListTypeInfo } from "@remult/core";
 import { changeDate } from '../shared/types';
 import { Context, EntityClass } from '@remult/core';
 import { Roles } from './roles';
 import { SelectValueDialogComponent } from '@remult/angular';
 import { Locations } from '../locations/locations';
-import { TimeOfDayColumn } from "../rides/rides";
+import { dayOfWeek, DayOfWeekColumn, timeOfDay, TimeOfDayColumn } from "../rides/rides";
 
 
 
@@ -111,13 +111,21 @@ export class UserColumn extends IdColumn {
             let lFrom = await context.for(Locations).findId(filter.fromLocation);
             let lto = await context.for(Locations).findId(filter.toLocation);
             relevantDriverIdsAreas.push(...(await context.for(UserPreferredAreas).find({
-                where: up => up.fromArea.isEqualTo(lFrom.area.value).and(
-                    up.toArea.isEqualTo(lto.area.value) // should include those for which up.from/toArea = ''
-                )
+                where: up => {
+                    if (lFrom.area.value == lto.area.value) {
+                        return up.fromArea.isEqualTo(lFrom.area.value).and(up.toArea.isEqualTo(''));
+                    }
+                    else
+                        return up.fromArea.isEqualTo(lFrom.area.value).and(
+                            up.toArea.isEqualTo(lto.area.value) // should include those for which up.from/toArea = ''
+                        ).or(up.fromArea.isEqualTo(lto.area.value).and(
+                            up.toArea.isEqualTo(lFrom.area.value) // should include those for which up.from/toArea = ''
+                        ));
+                }
             })).map(x => x.userId.value));
             relevantDriverIdsTimes.push(...(await context.for(UserPreferredTimes).find({
-                where: up => up.DayOfWeek.isEqualTo(filter.dayOfWeek).and(
-                    up.MorningOrAfterNoon.isEqualTo(filter.timeOfDay)
+                where: up => up.DayOfWeek.isEqualTo(ValueListTypeInfo.get(dayOfWeek).byId(filter.dayOfWeek)).and(
+                    up.MorningOrAfterNoon.isEqualTo(ValueListTypeInfo.get(timeOfDay).byId(filter.timeOfDay))
                 )
             })).map(x => x.userId.value));
             for (const x of relevantDriverIdsAreas) {
@@ -149,11 +157,11 @@ export class UserColumn extends IdColumn {
                     valuesForSelection.push({ caption: '<הסר נהג נוכחי>', id: '' });
                     valuesForSelection.push(...await UserColumn.getDrivers(getFilterDrivers()));
                     context.openDialog(SelectValueDialogComponent, x => x.args({
-                            values: valuesForSelection,
-                            onSelect: selectedValue => {
-                                this.value = selectedValue.id
-                            }
-                        })
+                        values: valuesForSelection,
+                        onSelect: selectedValue => {
+                            this.value = selectedValue.id
+                        }
+                    })
                     )
                 },
             })
@@ -171,18 +179,19 @@ export class UserColumn extends IdColumn {
 export interface filterDrivers {
     fromLocation: string,
     toLocation: string,
-    dayOfWeek: string,
+    dayOfWeek: number,
     timeOfDay: string,
 }
 
 @EntityClass
 export class UserPreferredTimes extends IdEntity {
     userId = new UserColumn(this.context);
-    DayOfWeek = new StringColumn();
+    DayOfWeek = new DayOfWeekColumn({ dbName: 'dayOfWeekInt' });
     MorningOrAfterNoon = new TimeOfDayColumn();
     constructor(private context: Context) {
         super({
-            name: 'UserPreferredTimes'
+            name: 'UserPreferredTimes',
+            allowApiCRUD: true
         });
     }
 }
@@ -195,7 +204,6 @@ export class UserPreferredAreas extends IdEntity {
         super({
             name: 'UserPreferredAreas',
             allowApiCRUD: true
-
         });
     }
 }

@@ -38,7 +38,8 @@ export class UsersComponent implements OnInit {
               columnSettings:up=>[up.fromArea,up.toArea],
               get: {
                 where: up => up.userId.isEqualTo(u.id),
-              }, newRow: up => up.userId.value = u.id.value
+              },
+              newRow: up => up.userId.value = u.id.value
             })
           });
       }
@@ -56,9 +57,28 @@ export class UsersComponent implements OnInit {
               columnSettings:up=>[up.DayOfWeek,up.MorningOrAfterNoon],
               get: {
                 where: up => up.userId.isEqualTo(u.id),
-              }, newRow: up => up.userId.value = u.id.value
+              },
+              newRow: up => up.userId.value = u.id.value
             })
           });
+      }
+    },
+    {
+      showInLine: true,
+      icon: 'edit',
+      textInMenu: 'ערוך מתנדב',
+      click: async u => {
+        await this.context.openDialog(InputAreaComponent,x=>x.args={
+          title:'הוספת נסיעה',
+          columnSettings:()=>[
+            u.name,
+            u.cellPhone,
+          ],
+          ok:async()=>{
+            await u.save();
+            await this.users.reloadData();
+          }
+        });
       }
     }],
     get: {
@@ -73,14 +93,11 @@ export class UsersComponent implements OnInit {
       return await this.dialog.confirmDelete(h.name.value)
     },
   });
-
-
   async resetPassword() {
     if (await this.dialog.yesNoQuestion("Are you sure you want to delete the password of " + this.users.currentRow.name.value)) {
       await UsersComponent.resetPassword(this.users.currentRow.id.value);
       this.dialog.info("Password deleted");
     };
-
   }
   @ServerFunction({ allowed: c => c.isAllowed(Roles.admin) })
   static async resetPassword(userId: string, context?: Context) {
@@ -90,10 +107,7 @@ export class UsersComponent implements OnInit {
       await u.save();
     }
   }
-
-
-
   ngOnInit() {
-  }
 
+  }
 }
